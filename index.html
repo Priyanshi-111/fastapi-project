@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --success: #10b981;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+                radial-gradient(at 50% 0%, hsla(225,39%,30%,0.3) 0, transparent 50%), 
+                radial-gradient(at 100% 0%, hsla(339,49%,30%,0.3) 0, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+        }
+
+        .btn-danger {
+            background-color: transparent;
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        .btn-danger:hover {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-edit {
+            background-color: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            margin-right: 0.5rem;
+        }
+
+        .btn-edit:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .user-list {
+            list-style: none;
+        }
+
+        .user-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .user-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--border-color);
+            transform: translateX(5px);
+        }
+
+        .user-info h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+            color: var(--text-main);
+        }
+
+        .user-info p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .user-actions {
+            display: flex;
+        }
+
+        #notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            transform: translateX(150%);
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1000;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        #notification.show {
+            transform: translateX(0);
+        }
+
+        .success-bg { background-color: var(--success); }
+        .error-bg { background-color: var(--danger); }
+        .info-bg { background-color: var(--primary); }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="notification"></div>
+
+    <div class="container">
+        <header>
+            <h1>User Management</h1>
+            <p class="subtitle">Manage your API users with this simple interface.</p>
+        </header>
+
+        <main>
+            <section class="glass-card">
+                <h2 style="margin-bottom: 1.5rem; font-size: 1.3rem;">Add / Edit User</h2>
+                <form id="userForm">
+                    <input type="hidden" id="userId">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" placeholder="Enter full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" placeholder="Enter email address" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">Create User</button>
+                    <button type="button" class="btn btn-primary" id="cancelEditBtn" style="display: none; background: transparent; border: 1px solid var(--border-color); color: var(--text-main); margin-top: 0.5rem;">Cancel Edit</button>
+                </form>
+            </section>
+
+            <section class="glass-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h2 style="font-size: 1.3rem;">Users Directory</h2>
+                    <button onclick="fetchUsers()" class="btn btn-sm" style="background: rgba(255,255,255,0.1); color: var(--text-main);">Refresh</button>
+                </div>
+                
+                <ul class="user-list" id="userList">
+                    <!-- Users will be populated here -->
+                </ul>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const API_URL = ''; // Relative URL since it's served from same domain
+        const userForm = document.getElementById('userForm');
+        const userList = document.getElementById('userList');
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const userIdInput = document.getElementById('userId');
+        const submitBtn = document.getElementById('submitBtn');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
+
+        // Fetch Users on load
+        document.addEventListener('DOMContentLoaded', fetchUsers);
+
+        // Form Submit Handler
+        userForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = nameInput.value;
+            const email = emailInput.value;
+            const id = userIdInput.value;
+            
+            const user = { name, email };
+
+            try {
+                if (id !== '') {
+                    // Update
+                    await fetch(`/users/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(user)
+                    });
+                    showNotification('User updated successfully', 'success-bg');
+                } else {
+                    // Create
+                    await fetch('/users', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(user)
+                    });
+                    showNotification('User created successfully', 'success-bg');
+                }
+                
+                resetForm();
+                fetchUsers();
+            } catch (error) {
+                showNotification('An error occurred', 'error-bg');
+                console.error(error);
+            }
+        });
+
+        // Cancel Edit
+        cancelEditBtn.addEventListener('click', resetForm);
+
+        // Fetch all users
+        async function fetchUsers() {
+            try {
+                const response = await fetch('/users');
+                const data = await response.json();
+                renderUsers(data.users);
+            } catch (error) {
+                console.error('Error fetching users:', error);
+                showNotification('Failed to load users', 'error-bg');
+            }
+        }
+
+        // Render users list
+        function renderUsers(users) {
+            userList.innerHTML = '';
+            
+            if (!users || users.length === 0) {
+                userList.innerHTML = `
+                    <div class="empty-state">
+                        <p>No users found. Add a user to get started.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            users.forEach((user, index) => {
+                if (!user) return; // Skip nulls if any from list manipulation
+                
+                const li = document.createElement('li');
+                li.className = 'user-item';
+                li.innerHTML = `
+                    <div class="user-info">
+                        <h3>${user.name || 'No Name'}</h3>
+                        <p>${user.email || 'No Email'}</p>
+                    </div>
+                    <div class="user-actions">
+                        <button class="btn btn-sm btn-edit" onclick="editUser(${index}, '${user.name}', '${user.email}')">Edit</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteUser(${index})">Delete</button>
+                    </div>
+                `;
+                userList.appendChild(li);
+            });
+        }
+
+        // Setup form for editing
+        function editUser(id, name, email) {
+            userIdInput.value = id;
+            nameInput.value = name;
+            emailInput.value = email;
+            submitBtn.textContent = 'Update User';
+            cancelEditBtn.style.display = 'inline-flex';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Reset form
+        function resetForm() {
+            userForm.reset();
+            userIdInput.value = '';
+            submitBtn.textContent = 'Create User';
+            cancelEditBtn.style.display = 'none';
+        }
+
+        // Delete user
+        async function deleteUser(id) {
+            if (confirm('Are you sure you want to delete this user?')) {
+                try {
+                    await fetch(`/users/${id}`, { method: 'DELETE' });
+                    showNotification('User deleted successfully', 'success-bg');
+                    fetchUsers();
+                } catch (error) {
+                    showNotification('Failed to delete user', 'error-bg');
+                    console.error(error);
+                }
+            }
+        }
+
+        // Notification system
+        function showNotification(message, className) {
+            const notif = document.getElementById('notification');
+            notif.textContent = message;
+            notif.className = className + ' show';
+            
+            setTimeout(() => {
+                notif.className = className;
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

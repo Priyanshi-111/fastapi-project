@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
 
 app = FastAPI()
 
@@ -6,12 +7,10 @@ app = FastAPI()
 users = []
 
 
-# Home route
+# Home route - Serves UI
 @app.get("/")
 def home():
-    return {
-        "message": "API is working"
-    }
+    return FileResponse("index.html")
 
 
 # CREATE - POST
